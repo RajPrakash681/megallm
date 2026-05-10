@@ -4,14 +4,13 @@ import { vectorStores } from "../store.js";
 export async function answerQuestion(question, collectionId) {
   // 1. Retrieve the vector store from memory
   const vectorStore = vectorStores[collectionId];
-  
+
   if (!vectorStore) {
     throw new Error("Document session not found. Please upload the document again.");
   }
 
-  // 2. Retrieve top relevant chunks
-  const retriever = vectorStore.asRetriever({ k: 5 });
-  const relevantChunks = await retriever.invoke(question);
+  // 2. Retrieve top relevant chunks via cosine similarity
+  const relevantChunks = await vectorStore.similaritySearch(question, 5);
 
   if (!relevantChunks.length) {
     return {
@@ -28,7 +27,7 @@ export async function answerQuestion(question, collectionId) {
 
   const context = contextBlocks.join("\n\n---\n\n");
 
-  // 4. Call Groq LLM
+  // 4. Call Groq LLM with a strict grounding prompt
   const systemPrompt = `You are a helpful assistant. Answer the user's question using strictly the following context from their uploaded document.
 
 Rules:
@@ -41,7 +40,7 @@ ${context}`;
 
   const chatModel = new ChatGroq({
     apiKey: process.env.GROQ_API_KEY,
-    modelName: "llama3-8b-8192", // Using a fast/free Groq model
+    modelName: "llama3-8b-8192",
     temperature: 0.2,
   });
 
@@ -52,7 +51,7 @@ ${context}`;
 
   const answer = response.content;
 
-  // Extract sources
+  // Extract source page numbers
   const sources = [
     ...new Set(
       relevantChunks

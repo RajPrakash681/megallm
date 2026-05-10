@@ -2,9 +2,9 @@ import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/hf_transformers";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { MemoryVectorStore } from "@langchain/core/vectorstores/memory";
+import { LocalEmbeddings } from "./embeddings.js";
+import { SimpleVectorStore } from "./vectorstore.js";
 import { vectorStores } from "../store.js";
 
 export async function ingestDocument(file) {
@@ -23,7 +23,9 @@ export async function ingestDocument(file) {
 
   const pageCount = docs.length;
 
-  // 2. Chunk Document
+  // 2. Chunk Document using RecursiveCharacterTextSplitter
+  // This strategy tries to split on paragraphs first, then newlines, then sentences,
+  // then words — keeping chunks semantically meaningful.
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
     chunkOverlap: 200,
@@ -31,15 +33,11 @@ export async function ingestDocument(file) {
 
   const chunks = await splitter.splitDocuments(docs);
 
-  // 3. Embed and Store using Local Memory and CPU
-  const embeddings = new HuggingFaceTransformersEmbeddings({
-    modelName: "Xenova/all-MiniLM-L6-v2",
-  });
-
+  // 3. Embed and Store
+  const embeddings = new LocalEmbeddings();
   const collectionId = `doc-${uuidv4()}`;
 
-  // Store the embedded chunks in the global memory dictionary
-  vectorStores[collectionId] = await MemoryVectorStore.fromDocuments(chunks, embeddings);
+  vectorStores[collectionId] = await SimpleVectorStore.fromDocuments(chunks, embeddings);
 
   console.log(`Indexed "${file.originalname}" — ${chunks.length} chunks into [${collectionId}]`);
 
