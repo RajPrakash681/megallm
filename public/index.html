@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotebookLM RAG | Document Chat</title>
+  <meta name="description" content="Chat with any document using AI">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-mesh"></div>
+  
+  <div class="app-container">
+    <header>
+      <h1>NotebookLM <span>RAG</span></h1>
+      <p>Upload a document and start conversing with its content.</p>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <section id="upload-section" class="glass-panel">
+        <div class="upload-box" id="drop-zone">
+          <input type="file" id="file-input" accept=".pdf,.txt" hidden>
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h3>Click or drag to upload</h3>
+          <p>Supports PDF and TXT</p>
+        </div>
+        <div id="upload-status" class="hidden">
+          <div class="spinner"></div>
+          <p>Processing document... this may take a moment.</p>
+        </div>
+      </section>
+
+      <!-- Chat Section (Hidden initially) -->
+      <section id="chat-section" class="glass-panel hidden">
+        <div class="doc-info">
+          <span id="doc-name">Document.pdf</span>
+          <span class="badge" id="doc-stats">0 Pages | 0 Chunks</span>
+        </div>
+        
+        <div class="chat-window" id="chat-window">
+          <div class="message system-msg">
+            Document loaded successfully! Ask me anything about it.
+          </div>
+        </div>
+
+        <form id="chat-form" class="chat-input-wrapper">
+          <input type="text" id="chat-input" placeholder="Ask a question about the document..." required autocomplete="off">
+          <button type="submit" id="send-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
