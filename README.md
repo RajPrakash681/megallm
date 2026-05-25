@@ -21,7 +21,7 @@ The application implements a complete RAG pipeline locally, running embeddings d
 - **Frontend**: Vanilla HTML5, CSS3, JavaScript
 - **RAG / AI**: LangChain, `@xenova/transformers` (Local Embeddings), Groq API (LLM Generation)
 
-## ⚙️ Local Setup
+##  Local Setup
 
 1. **Clone the repository**
    ```bash
